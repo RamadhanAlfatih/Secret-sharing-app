@@ -2,16 +2,32 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const crypto = require('crypto');
 const { createClient } = require('redis');
+const helmet = require('helmet');
+require('dotenv').config();
+
 
 const app = express();
 app.use(bodyParser.json());
 app.use(express.static('public')); // Serve static files from the public folder
+app.use(helmet());
+
+const rateLimit = require('express-rate-limit');
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100 // Limit each IP to 100 requests per windowMs
+});
+
+// Apply the rate limiting middleware to all requests
+app.use(limiter);
+
 
 // Connect to Redis
 const redisClient = createClient({
-  url: 'redis://localhost:6379',  // Default Redis port
-});
+    url: process.env.REDIS_URL || 'redis://localhost:6379',
+  });
 redisClient.connect();
+  
 
 redisClient.on('error', (err) => {
   console.error('Redis connection error:', err);
@@ -22,31 +38,40 @@ function generateToken() {
   return crypto.randomBytes(16).toString('hex');
 }
 
+const ENCRYPTION_SECRET = process.env.ENCRYPTION_SECRET || 'defaultEncryptionKey';
+
 function encryptSecret(secret) {
-  const cipher = crypto.createCipher('aes-256-ctr', 'encryptionSecretKey');
+  const cipher = crypto.createCipher('aes-256-ctr', ENCRYPTION_SECRET);
   let encrypted = cipher.update(secret, 'utf8', 'hex');
   encrypted += cipher.final('hex');
   return encrypted;
 }
 
 function decryptSecret(encrypted) {
-  const decipher = crypto.createDecipher('aes-256-ctr', 'encryptionSecretKey');
+  const decipher = crypto.createDecipher('aes-256-ctr', ENCRYPTION_SECRET);
   let decrypted = decipher.update(encrypted, 'hex', 'utf8');
   decrypted += decipher.final('utf8');
   return decrypted;
 }
 
+
 // Create a secret
 app.post('/create-secret', async (req, res) => {
-  const { secret, expiration } = req.body;
-  const token = generateToken();
-  const encryptedSecret = encryptSecret(secret);
-
-  // Store secret in Redis with expiration time (in seconds)
-  await redisClient.setEx(token, expiration, encryptedSecret);
-
-  res.json({ url: `http://localhost:3000/secret/${token}` });
-});
+    try {
+      const { secret, expiration } = req.body;
+      const token = generateToken();
+      const encryptedSecret = encryptSecret(secret);
+  
+      // Store secret in Redis with expiration time (in seconds)
+      await redisClient.setEx(token, expiration, encryptedSecret);
+  
+      res.json({ url: `https://yourapp.onrender.com/secret/${token}` });
+    } catch (error) {
+      console.error('Error creating secret:', error);
+      res.status(500).send('Internal Server Error');
+    }
+  });
+  
 
 // Access a secret
 app.get('/secret/:token', async (req, res) => {
@@ -64,6 +89,9 @@ app.get('/secret/:token', async (req, res) => {
 });
 
 // Start the server
-app.listen(3000, () => {
-  console.log('Server running at http://localhost:3000');
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}`);
 });
+
