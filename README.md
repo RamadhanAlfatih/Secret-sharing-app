@@ -1,76 +1,73 @@
-Secret Sharing App
+# Secret Sharing App
 
 A simple and secure secret-sharing application that allows users to share confidential information through a one-time URL. The secret will expire once it has been viewed or after a specified time period.
 
-Features
+## Features
 
-Secure Secret Sharing: Secrets are encrypted and stored in Redis for a limited time.
+- **Secure Secret Sharing**: Secrets are encrypted and stored in Redis for a limited time.
+- **Ephemeral Links**: Generate one-time use links that will expire after being accessed or after the expiration time.
+- **Simple UI**: User-friendly interface for entering secrets and generating URLs.
 
-Ephemeral Links: Generate one-time use links that will expire after being accessed or after the expiration time.
+## Tech Stack
 
-Simple UI: User-friendly interface for entering secrets and generating URLs.
+- **Frontend**: HTML, CSS, JavaScript
+- **Backend**: Node.js, Express.js
+- **Database**: Redis for in-memory storage of secrets
+- **Encryption**: AES-256 to ensure secrets are securely stored
 
-Tech Stack
-
-Frontend: HTML, CSS, JavaScript
-
-Backend: Node.js, Express.js
-
-Database: Redis for in-memory storage of secrets
-
-Encryption: AES-256 to ensure secrets are securely stored
-
-Installation
+## Installation
 
 To set up this project locally, follow the steps below:
 
-Prerequisites
+### Prerequisites
 
-Node.js: Download and install Node.js
+- **Node.js**: [Download and install Node.js](https://nodejs.org/)
+- **Redis**: Install Redis on your local machine or use a cloud Redis provider.
 
-Redis: Install Redis on your local machine or use a cloud Redis provider.
+### Steps
 
-Steps
+1. **Clone the Repository**:
 
-Clone the Repository:
+   ```bash
+   git clone https://github.com/yourusername/secret-sharing-app.git
+   cd secret-sharing-app
+   ```
 
-git clone https://github.com/yourusername/secret-sharing-app.git
-cd secret-sharing-app
+2. **Install Dependencies**:
 
-Install Dependencies:
+   ```bash
+   npm install
+   ```
 
-npm install
+3. **Start Redis Server**:
+   - **Windows**: Run `redis-server.exe` from the folder where you installed Redis.
+   - **Mac/Linux**: Run `redis-server`.
 
-Start Redis Server:
+4. **Run the Application**:
 
-Windows: Run redis-server.exe from the folder where you installed Redis.
+   ```bash
+   node server.js
+   ```
 
-Mac/Linux: Run redis-server.
+5. **Access the App**:
 
-Run the Application:
+   Open your browser and go to [http://localhost:3000](http://localhost:3000).
 
-node server.js
+## Usage
 
-Access the App:
+1. Enter the secret you want to share.
+2. Select the expiration time.
+3. Click **Generate Secret** to get a one-time URL.
+4. Share the generated URL with your intended recipient.
 
-Open your browser and go to http://localhost:3000.
+## Screenshots
 
-Usage
-
-Enter the secret you want to share.
-
-Select the expiration time.
-
-Click Generate Secret to get a one-time URL.
-
-Share the generated URL with your intended recipient.
-
-Screenshots
+![image](https://github.com/user-attachments/assets/21962d82-b8ff-49e1-a82f-3e4dc5d33507)
 
 
+## Project Structure
 
-Project Structure
-
+```
 secret-sharing-app/
   ├── node_modules/
   ├── public/
@@ -79,25 +76,13 @@ secret-sharing-app/
   ├── server.js
   ├── .gitignore
   └── README.md
+```
 
-Future Enhancements
+## Acknowledgments
 
-HTTPS Integration for better security during data transmission.
-
-Authentication: Adding user accounts for more personalized secret sharing.
-
-Expiration Notifications: Notify users when their secrets expire.
-
-License
-
-This project is licensed under the MIT License. See the LICENSE file for details.
-
-Acknowledgments
-
-Redis for fast in-memory data storage.
-
-Express.js for the backend web server.
-
-Font Awesome for any icons used in the UI.
+- **Redis** for fast in-memory data storage.
+- **Express.js** for the backend web server.
+- **Font Awesome** for any icons used in the UI.
 
 Feel free to fork the repository, open issues, or contribute to make this project better!
+
