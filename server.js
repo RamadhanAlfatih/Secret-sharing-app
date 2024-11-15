@@ -3,26 +3,23 @@ const bodyParser = require('body-parser');
 const crypto = require('crypto');
 const { createClient } = require('redis');
 const helmet = require('helmet');
-require('dotenv').config();
 
 
 const app = express();
 app.use(bodyParser.json());
-app.use(express.static('public')); // Serve static files from the public folder
+app.use(express.static('public')); 
 app.use(helmet());
 
 const rateLimit = require('express-rate-limit');
 
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // Limit each IP to 100 requests per windowMs
+  windowMs: 15 * 60 * 1000, 
+  max: 100 // Limit each IP to 100 requests 
 });
 
-// Apply the rate limiting middleware to all requests
 app.use(limiter);
 
 
-// Connect to Redis
 const redisClient = createClient({
     url: process.env.REDIS_URL || 'redis://localhost:6379',
   });
@@ -55,7 +52,6 @@ function decryptSecret(encrypted) {
 }
 
 
-// Create a secret
 app.post('/create-secret', async (req, res) => {
     try {
       const { secret, expiration } = req.body;
